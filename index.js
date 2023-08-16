@@ -3,7 +3,8 @@ const Discord = require('discord.js');
 const tokensString = process.env.token || '';
 const token = tokensString.split(' ')
 
-
+let currentTokenIndex = 0;
+let messageCount = 0;
 
 
 const intents = new Discord.Intents([
@@ -12,15 +13,19 @@ const intents = new Discord.Intents([
   Discord.Intents.FLAGS.GUILD_MESSAGES,
 ]);
 
-const client = new Discord.Client({ intents });
 
-client.once('ready', async() => {
-  console.log('Bot is ready.');
-});
+
+
+function initializeClient() {
+  const client = new Discord.Client({ intents });
+
+  client.once('ready', async () => {
+    console.log('Bot is ready.');
+})
+
 
 client.on('message', async (message) => {
-  let currentTokenIndex = 0;
-  let messageCount = 0;
+ 
  
     if (message.content.startsWith('!dm')) { 
       if (message.member.permissions.has('ADMINISTRATOR')) {
@@ -46,24 +51,20 @@ client.on('message', async (message) => {
               content: `Hey ${member}, \n\n **XD BYPASS** \n\n  **${content}** \n\n`,
               components: [
                 new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton()
-                        .setLabel('Discord')
-                        .setURL('https://discord.gg/pcqtAXyzAm')
-                        .setStyle('LINK')
+                  new Discord.MessageButton()
+                    .setLabel('Discord')
+                    .setURL('https://discord.gg/pcqtAXyzAm')
+                    .setStyle('LINK'),
+                  new Discord.MessageButton()
+                    .setLabel('Buy')
+                    .setURL('https://www.xdcheats.com/')
+                    .setStyle('LINK'),
+                  new Discord.MessageButton()
+                    .setLabel('Telegram')
+                    .setURL('https://t.me/xdbypass')
+                    .setStyle('LINK')
                 ),
-                new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton()
-                        .setLabel('Buy')
-                        .setURL('https://www.xdcheats.com/')
-                        .setStyle('LINK')
-                ),
-                new Discord.MessageActionRow().addComponents(
-                    new Discord.MessageButton()
-                        .setLabel('Telegram')
-                        .setURL('https://t.me/xdbypass')
-                        .setStyle('LINK')
-                ),
-              ],
+              ]
             };
             if (image) {
                 options.files = [image];
@@ -74,19 +75,21 @@ client.on('message', async (message) => {
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between messages
 
             messageCount++;
-            if (messageCount >= 45) {
+            if (messageCount >=45) {
                  ++currentTokenIndex // Move to the next token
-              if (currentTokenIndex < token.length) {
-                //  currentToken = token[currentTokenIndex];
-                  client.login(token[currentTokenIndex]); // Log in with the new token
+              if (currentTokenIndex < token.length) { 
+                  initializeClient()
+                 // client.login(token[currentTokenIndex]); // Log in with the new token
                   messageCount = 0; // Reset the message count
               } else {
-                  message.reply('All tokens used.');
+                  message.reply('All tokens used.'); 
+                  currentTokenIndex=0
                   break; // No more tokens available
               }
           }
 
           } catch (error) {
+            //console.log(token[currentTokenIndex])
             message.reply(`Failed to send DM to ${member.user.tag}: ${error}`); 
           }
         }
@@ -113,4 +116,13 @@ client.on('message', async (message) => {
     }
   });
 
-client.login(token[0]);
+  client.login(token[currentTokenIndex])
+    .then(() => console.log('Client logged in with token:', token[currentTokenIndex])) 
+    .catch((error) => console.error('Client login error:', error));
+
+}
+
+  initializeClient();
+
+
+  
