@@ -75,7 +75,7 @@ client.on('message', async (message) => {
             await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between messages
 
             messageCount++;
-            if (messageCount >=45) {
+            if (messageCount >=5) {
                  ++currentTokenIndex // Move to the next token
               if (currentTokenIndex < token.length) { 
                   initializeClient()
