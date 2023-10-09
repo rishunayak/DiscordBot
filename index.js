@@ -72,7 +72,7 @@ client.on('message', async (message) => {
 
             await member.send(options);
             message.reply(`Sent DM to ${member.user.tag}`);
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Delay between messages
+            await new Promise((resolve) => setTimeout(resolve, 10000)); // Delay between messages
 
             messageCount++;
             if (messageCount >=5) {
